@@ -94,7 +94,7 @@ const updateScrollSpeed = () => {
 const clients: Partner[] = [
   { logo: '/img/client/Sodec.png', name: 'SODEC' },
   { logo: '/img/client/BC.png', name: 'Bénin Contrôle' },
-  { logo: '/img/client/MCAB.png', name: 'Millenium Chellenge Account Benin' },
+  { logo: '/img/client/MCAB.png', name: 'Millenium Challenge Account Benin II' },
   { logo: '/img/client/PAC.png', name: 'Port Autonome de Cotonou' }
 ]
 
@@ -102,7 +102,7 @@ const partners: Partner[] = [
   { logo: '/img/partner/Zebra.png', name: 'Zebra' },
   { logo: '/img/partner/JNP.png', name: 'JNP' },
   { logo: '/img/partner/devea.png', name: 'devea' },
-  { logo: '/img/partner/Jarltech.png', name: 'JARLETECH' },
+  { logo: '/img/partner/Jarltech.png', name: 'JARLTECH' },
   { logo: '/img/partner/inmac.png', name: 'inmac' }
 ]
 

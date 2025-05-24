@@ -66,9 +66,7 @@ const services: Service[] = [
     details: [
       "Facilitation de l'implantation et croissance des entreprises au Bénin",
       'Vente de produits physiques, digitaux et équipements spécialisés',
-      "Distribution d'équipements spécialisés en traçabilité",
-      "Service supplémentaire pour tester le débordement",
-      "Autre élément optionnel pour voir le scroll"
+      "Distribution d'équipements spécialisés en traçabilité"
     ]
   },
   {

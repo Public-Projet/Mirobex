@@ -29,10 +29,15 @@ export default defineEventHandler(async (event) => {
     host: config.smtpHost,
     port: Number(config.smtpPort),
     secure: false, // true pour 465
+    requireTLS: true,
     auth: {
       user: config.smtpUser,
       pass: config.smtpPass
-    }
+    },
+  tls: {
+    ciphers: 'SSLv3', // Peut être nécessaire
+    rejectUnauthorized: false // Certificats auto-signés
+  }
   })
 
   const currentDate = new Date().toLocaleString('fr-FR', {
@@ -49,7 +54,7 @@ export default defineEventHandler(async (event) => {
 
   // Email de notification pour l'équipe
   const adminMailOptions = {
-    from: `"Mirobex contact" <${config.smtpUser}>`,
+    from: `"Mirobex - Formulaire de contact" <${config.smtpUser}>`,
     to: config.smtpFrom,
     replyTo: body.email,
     bcc: ['contact@mirobex.bj', 'steveasterafovo@gmail.com'],
@@ -205,7 +210,7 @@ export default defineEventHandler(async (event) => {
 
   // Email d'accusé de réception pour le client
   const clientMailOptions = {
-    from: `"Mirobex contact" <${config.smtpUser}>`,
+    from: `"Mirobex - Formulaire de contact" <${config.smtpUser}>`,
     to: body.email,
     replyTo: config.smtpReply,
     subject: `[Accusé de réception] : Votre message a été reçu - Ticket ${ticketNumber}`,

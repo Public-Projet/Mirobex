@@ -16,7 +16,7 @@
           <div
             class="absolute inset-0 p-6 sm:p-8 md:p-10 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 bg-white/95 backdrop-blur-sm flex flex-col z-20 before:absolute before:inset-0 before:bg-gradient-to-br before:from-transparent before:via-primary/3 before:to-transparent overflow-y-auto custom-scrollbar">
 
-            <!-- Dégradé corrigé pour mobile -->
+            <!-- Dégradé pour mobile -->
             <div
               class="absolute inset-x-0 top-0 h-[300px] sm:h-[400px] md:h-[500px] -z-10 transform-gpu overflow-hidden blur-3xl"
               aria-hidden="true">

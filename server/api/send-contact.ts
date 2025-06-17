@@ -2,16 +2,16 @@ import { createTransport } from 'nodemailer'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
-  
+
   // useRuntimeConfig pour accéder aux variables d'environnement
   const config = useRuntimeConfig()
 
-    // DEBUGGING:
+  // DEBUGGING:
   console.log('--- Nuxt Runtime Config on Server ---');
   console.log('SMTP_HOST:', config.smtpHost);
   console.log('SMTP_PORT:', config.smtpPort);
   console.log('SMTP_USER:', config.smtpUser ? '******' : 'UNDEFINED');
-  console.log('SMTP_PASS:', config.smtpPass ? '******' : 'UNDEFINED'); 
+  console.log('SMTP_PASS:', config.smtpPass ? '******' : 'UNDEFINED');
   console.log('SMTP_FROM:', config.smtpFrom);
   console.log('SMTP_REPLY:', config.smtpReply);
   console.log('FRONTEND_URL (public):', config.public.frontendUrl);
@@ -34,10 +34,10 @@ export default defineEventHandler(async (event) => {
       user: config.smtpUser,
       pass: config.smtpPass
     },
-  tls: {
-    ciphers: 'SSLv3', // Peut être nécessaire
-    rejectUnauthorized: false // Certificats auto-signés
-  }
+    tls: {
+      ciphers: 'SSLv3', // Peut être nécessaire
+      rejectUnauthorized: false // Certificats auto-signés
+    }
   })
 
   const currentDate = new Date().toLocaleString('fr-FR', {
@@ -57,7 +57,7 @@ export default defineEventHandler(async (event) => {
     from: `"Mirobex - Formulaire de contact" <${config.smtpUser}>`,
     to: config.smtpFrom,
     replyTo: body.email,
-    bcc: ['contact@mirobex.bj', 'steveasterafovo@gmail.com'],
+    bcc: ['tact@mirobex.bj', 'steveasterafovo@gmail.com'],
     subject: `[Mirobex] : ${body.subject} depuis contact - ${ticketNumber}`,
     text: `
       Nouveau message de contact reçu sur Mirobex
@@ -128,6 +128,14 @@ export default defineEventHandler(async (event) => {
                     ${body.email}
                   </a>
                     </div>
+                  </div>
+                </div>
+
+                <div style="display: flex; align-items: center; font-weight: 600; color: #4a5568; margin-bottom: 5px;">
+                  <span style="background: #e2e8f0; padding: 8px; border-radius: 6px; margin-right: 10px;">📱</span>
+                  <div>
+                    Numéro de téléphone
+                    <div style="color: #2d3748; font-size: 16px;">${body.phone}</div>
                   </div>
                 </div>
                 
@@ -208,7 +216,7 @@ export default defineEventHandler(async (event) => {
     ]
   }
 
-  // Email d'accusé de réception pour le client
+  // Email d'accusé de réception pour l'utilisateur
   const clientMailOptions = {
     from: `"Mirobex - Formulaire de contact" <${config.smtpUser}>`,
     to: body.email,
@@ -285,6 +293,10 @@ export default defineEventHandler(async (event) => {
               </h3>
               
               <div style="background: #ffffff; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                <div style="margin-bottom: 15px;">
+                  <strong style="color: #374151;">Téléphone :</strong> 
+                  <span style="color: #2d3748;">${body.phone}</span>
+                </div>
                 <div style="margin-bottom: 15px;">
                   <strong style="color: #374151;">Sujet :</strong> 
                   <span style="color: #2d3748;">${body.subject}</span>
@@ -385,9 +397,9 @@ export default defineEventHandler(async (event) => {
   try {
     await transporter.sendMail(adminMailOptions)
     await transporter.sendMail(clientMailOptions)
-    
-    return { 
-      success: true, 
+
+    return {
+      success: true,
       message: 'Message envoyé avec succès',
       ticketNumber: ticketNumber
     }

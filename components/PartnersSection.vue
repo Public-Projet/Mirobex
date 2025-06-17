@@ -1,187 +1,186 @@
 <template>
-  <section id="partners" class="py-8 sm:py-4 md:py-6 relative">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <!-- Header -->
-      <div class="text-center mb-8 sm:mb-10 md:mb-12">
-        <h2 class="text-2xl sm:text-3xl md:text-4xl text-primary mb-6 sm:mb-8 font-[Poppins,sans-serif]">
-          Nos {{ activeTab === 'clients' ? 'clients' : 'partenaires' }}
-        </h2>
-        <div class="inline-flex bg-white rounded-full p-1 shadow-lg border border-gray-200">
-          <button @click="activeTab = 'clients'" :class="[
-            'px-4 sm:px-6 py-2 sm:py-3 rounded-full text-xs sm:text-sm font-medium transition-all duration-300',
-            activeTab === 'clients' ? 'bg-primary text-white shadow-md' : 'text-gray-600 hover:text-gray-900'
-          ]">
-            Clients
-          </button>
-          <button @click="activeTab = 'partners'" :class="[
-            'px-4 sm:px-6 py-2 sm:py-3 rounded-full text-xs sm:text-sm font-medium transition-all duration-300',
-            activeTab === 'partners' ? 'bg-primary text-white shadow-md' : 'text-gray-600 hover:text-gray-900'
-          ]">
-            Partenaires
-          </button>
-        </div>
-      </div>
+  <section id="partners" class="py-8 sm:py-12 md:py-16 px-4 sm:px-8 md:px-16">
+    <div
+      class="mx-auto flex flex-col md:flex-row py-12 sm:py-20 px-4 sm:px-8 md:px-16 items-center gap-8 md:gap-12 lg:gap-16 bg-gradient-to-br from-primary/0 to-primary/20 rounded-2xl">
 
-      <!-- Carrousel -->
-      <div class="relative overflow-hidden pb-12 sm:pb-14 md:pb-16">
-        <div
-          class="absolute left-0 top-0 w-8 sm:w-16 md:w-24 lg:w-32 h-full bg-gradient-to-r from-slate-100 via-slate-100/80 to-transparent z-10 pointer-events-none">
-        </div>
-        <div
-          class="absolute right-0 top-0 w-8 sm:w-16 md:w-24 lg:w-32 h-full bg-gradient-to-l from-slate-100 via-slate-100/80 to-transparent z-10 pointer-events-none">
-        </div>
+    <!-- Contenu texte -->
+      <Transition name="fade" mode="out-in">
+        <div :key="currentSlide.id" class="text-content w-full md:w-3/5 min-w-[300px] text-center md:text-left">
+          <h2 class="text-4xl lg:text-5xl xl:text-6xl font-bold text-primary mb-4 md:mb-6 leading-tight font-[Poppins,sans-serif]">
+            {{ currentSlide.title }}
+          </h2>
 
-        <div ref="carousel" class="flex" @mouseenter="pauseScroll" @mouseleave="resumeScroll"
-          :style="{ transform: `translateX(${translateX}px)` }">
-          <template v-for="(item, index) in duplicatedData" :key="index">
-            <div class="flex-shrink-0 mx-3 sm:mx-4 md:mx-6 lg:mx-8 group cursor-pointer relative"
-              @mouseenter="hoveredItem = index" @mouseleave="hoveredItem = null">
-              <div
-                class="relative h-20 sm:h-24 md:h-32 lg:h-40 xl:h-48 w-auto flex items-center p-3 sm:p-4 md:p-6 lg:p-8 justify-center rounded-2xl sm:rounded-3xl transition-all duration-300 group-hover:scale-105 group-hover:bg-gray-50/50">
-                <img :src="item.logo" :alt="item.name" :class="[
-                  'max-w-full max-h-full object-contain transition-all duration-300',
-                  hoveredItem === index ? 'filter-none' : 'filter grayscale'
-                ]" />
-              </div>
+          <p class="text-base md:text-lg mb-6 md:mb-8 max-w-md mx-auto md:mx-0">
+            {{ currentSlide.description }}
+          </p>
 
-              <!-- Tooltip -->
-              <div :class="[
-                'absolute top-full mt-2 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-2 sm:px-3 py-1 rounded-md text-xs sm:text-sm font-medium whitespace-nowrap transition-all duration-300 z-50',
-                hoveredItem === index ? 'opacity-100 translate-y-0 visible' : 'opacity-0 translate-y-2 invisible'
-              ]">
-                {{ item.name }}
-                <!-- Flèche du tooltip -->
-                <div
-                  class="absolute bottom-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-900">
-                </div>
-              </div>
+          <!-- Boutons de navigation -->
+          <div class="navigation-buttons flex gap-3 justify-center md:justify-start">
+            <button
+              @click="prevSlide"
+              aria-label="Previous slide"
+              class="bg-white border border-primary/10 rounded-full w-16 h-16 flex items-center justify-center shadow-sm hover:bg-primary/10 hover:border-primary transition-all hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50"
+            >
+              <IconArrowUp class="w-7 h-7 text-primary" />
+            </button>
+
+            <button
+              @click="nextSlide"
+              aria-label="Next slide"
+              class="bg-white border border-primary/10 rounded-full w-16 h-16 flex items-center justify-center shadow-sm hover:bg-primary/10 hover:border-primary transition-all hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50"
+            >
+              <IconArrowDown class="w-7 h-7 text-primary" />
+            </button>
+          </div>
+        </div>
+      </Transition>
+
+      <!-- Conteneur d'images -->
+      <div class="image-grid-container w-full md:w-2/5 flex justify-center items-center min-h-[300px] relative">
+        <Transition name="fade" mode="out-in">
+          <!-- Grille avec logos -->
+          <div
+            :key="currentSlide.id"
+            class="image-grid p-4 md:p-6 rounded-xl backdrop-blur-sm w-full max-w-md mx-auto"
+            :class="gridClasses"
+          >
+            <!-- Boucle sur les logos du slide -->
+            <div
+              v-for="(logo, index) in currentSlide.logos"
+              :key="currentSlide.id + '-' + index"
+              class="logo-item bg-white rounded-lg p-3 md:p-4 flex items-center justify-center shadow-md hover:shadow-lg transition-shadow"
+              :class="logoGridPlacement(logo, index)"
+            >
+              <img :src="logo.src" :alt="logo.alt" class="max-h-24 md:max-h-32 object-contain" />
             </div>
-          </template>
-        </div>
+          </div>
+        </Transition>
       </div>
     </div>
   </section>
 </template>
 
-<script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+<script setup>
+import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { IconArrowUp, IconArrowDown } from '@tabler/icons-vue';
 
-interface Partner {
-  name: string
-  logo: string
-}
-
-const activeTab = ref<'clients' | 'partners'>('clients')
-const hoveredItem = ref<number | null>(null)
-const isHovered = ref(false)
-const translateX = ref(0)
-const carousel = ref<HTMLElement | null>(null)
-let animationId: number | null = null
-const SCROLL_SPEED = ref(1.0)
-
-// Vitesse
-const updateScrollSpeed = () => {
-  const width = window.innerWidth
-  if (width < 640) {
-    SCROLL_SPEED.value = 0.6 // Plus sur mobile
-  } else if (width < 768) {
-    SCROLL_SPEED.value = 0.8 // Vitesse sur tablette
-  } else {
-    SCROLL_SPEED.value = 1.0 // Vitesse normale pour desktop
+// Définition
+const slides = ref([
+  {
+    id: 1,
+    title: 'Partenaires de marques ambitieuses',
+    description: 'Notre savoir-faire s\'exprime aux côtés d\'acteurs qui exigent le meilleur pour leur identité.',
+    logos: [
+      { src: '/img/partner/Zebra.png', alt: 'Zebra' },
+      { src: '/img/partner/JNP.png', alt: 'JNP' },
+      { src: '/img/partner/devea.png', alt: 'devea' },
+      { src: '/img/partner/Jarltech.png', alt: 'JARLTECH', tall: true },
+      { src: '/img/partner/inmac.png', alt: 'inmac' }
+    ]
+  },
+  {
+    id: 2,
+    title: 'Des marques reconnues nous choisissent',
+    description: 'La qualité de nos partenariats témoigne de notre capacité à incarner et valoriser les marques les plus exigeantes.',
+    logos: [
+      { src: '/img/client/Sodec.png', alt: 'SODEC' },
+      { src: '/img/client/BC.png', alt: 'Bénin Contrôle' },
+      { src: '/img/client/MCAB.png', alt: 'Millenium Challenge Account Benin II' },
+      { src: '/img/client/PAC.png', alt: 'Port Autonome de Cotonou' }
+    ]
   }
-}
+]);
 
-const clients: Partner[] = [
-  { logo: '/img/client/Sodec.png', name: 'SODEC' },
-  { logo: '/img/client/BC.png', name: 'Bénin Contrôle' },
-  { logo: '/img/client/MCAB.png', name: 'Millenium Challenge Account Benin II' },
-  { logo: '/img/client/PAC.png', name: 'Port Autonome de Cotonou' }
-]
+const currentSlideIndex = ref(0);
+let intervalId = null;
+const slideDuration = 20000;
 
-const partners: Partner[] = [
-  { logo: '/img/partner/Zebra.png', name: 'Zebra' },
-  { logo: '/img/partner/JNP.png', name: 'JNP' },
-  { logo: '/img/partner/devea.png', name: 'devea' },
-  { logo: '/img/partner/Jarltech.png', name: 'JARLTECH' },
-  { logo: '/img/partner/inmac.png', name: 'inmac' }
-]
+const currentSlide = computed(() => slides.value[currentSlideIndex.value]);
 
-const currentData = computed(() => activeTab.value === 'clients' ? clients : partners)
-const duplicatedData = computed(() => [...currentData.value, ...currentData.value, ...currentData.value])
+const gridClasses = computed(() => {
+  let baseClasses = 'grid grid-cols-2 gap-4 md:gap-6';
 
-const startScrolling = () => {
-  if (!carousel.value) return
+  if (currentSlide.value.id === 1) {
+    baseClasses += ' md:grid-cols-3';
+  } else if (currentSlide.value.id === 2) {
+    baseClasses += ' md:grid-cols-2';
+  }
+  return baseClasses;
+});
 
-  const carouselWidth = carousel.value.scrollWidth / 3
-  const animate = () => {
-    if (!isHovered.value) {
-      translateX.value -= SCROLL_SPEED.value
-      if (Math.abs(translateX.value) >= carouselWidth) {
-        translateX.value = 0
-      }
+const logoGridPlacement = (logo, index) => {
+  const classes = [];
+  if (currentSlide.value.id === 1) {
+    if (logo.tall) {
+      classes.push('md:col-span-1 md:row-span-2 md:col-start-2 md:row-start-1');
+    } else {
+      if (index === 0) classes.push('md:col-start-1 md:row-start-1'); 
+      if (index === 1) classes.push('md:col-start-3 md:row-start-1'); 
+      if (index === 2) classes.push('md:col-start-1 md:row-start-2'); 
+      if (index === 4) classes.push('md:col-start-3 md:row-start-2'); 
     }
-    animationId = requestAnimationFrame(animate)
+  } else if (currentSlide.value.id === 2) {
   }
+  return classes.join(' ');
+};
 
-  if (animationId) cancelAnimationFrame(animationId)
-  animationId = requestAnimationFrame(animate)
-}
+const nextSlide = () => {
+  currentSlideIndex.value = (currentSlideIndex.value + 1) % slides.value.length;
+  resetAutoSlide();
+};
 
-const pauseScroll = () => {
-  isHovered.value = true
-  if (animationId) {
-    cancelAnimationFrame(animationId)
-    animationId = null
-  }
-}
+const prevSlide = () => {
+  currentSlideIndex.value = (currentSlideIndex.value - 1 + slides.value.length) % slides.value.length;
+  resetAutoSlide();
+};
 
-const resumeScroll = () => {
-  isHovered.value = false
-  hoveredItem.value = null
-  setTimeout(() => {
-    if (!isHovered.value) startScrolling()
-  }, 100)
-}
+const startAutoSlide = () => {
+  intervalId = setInterval(() => {
+    nextSlide();
+  }, slideDuration);
+};
+
+const resetAutoSlide = () => {
+  clearInterval(intervalId); 
+  startAutoSlide(); 
+};
 
 onMounted(() => {
-  updateScrollSpeed()
-  startScrolling()
-  window.addEventListener('resize', updateScrollSpeed)
-})
+  startAutoSlide();
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'ArrowUp') {
+      prevSlide();
+    } else if (e.key === 'ArrowDown') {
+      nextSlide();
+    }
+  };
+
+  window.addEventListener('keydown', handleKeyDown);
+
+  onUnmounted(() => {
+    window.removeEventListener('keydown', handleKeyDown);
+  });
+});
 
 onUnmounted(() => {
-  if (animationId) cancelAnimationFrame(animationId)
-  window.removeEventListener('resize', updateScrollSpeed)
-})
-
-watch(activeTab, () => {
-  translateX.value = 0
-  if (!isHovered.value) startScrolling()
-})
+  if (intervalId) clearInterval(intervalId); 
+});
 </script>
 
 <style scoped>
-.filter {
-  filter: grayscale(100%);
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
-.filter-none {
-  filter: none;
-}
-
-.group:hover img {
-  transition: filter 0.3s ease;
-}
-
-@media (max-width: 480px) {
-  .group {
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
+@media (max-width: 767px) {
+  .logo-item.md\:row-span-2 {
+    grid-row: span 1;
   }
-}
-
-.bg-gradient-to-r,
-.bg-gradient-to-l {
-  backdrop-filter: blur(1px);
 }
 </style>

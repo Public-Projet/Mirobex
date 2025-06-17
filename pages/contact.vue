@@ -41,7 +41,7 @@
             </div>
           </div>
 
-          <form @submit.prevent="submitForm" class="space-y-6">
+          <form @submit.prevent="validateAndSubmit" class="space-y-6">
             <div class="relative">
               <IconUser
                 class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 peer-focus:text-primary transition-colors" />
@@ -61,7 +61,7 @@
             <div class="relative">
               <IconMail
                 class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 peer-focus:text-primary transition-colors" />
-              <input v-model="form.email" type="email" id="email" placeholder=" " required
+              <input v-model="form.email" @blur="validateEmail" type="email" id="email" placeholder=" " required
                 class="text-gray-700 block px-10 pb-2 pt-3 w-full text-sm bg-white rounded-lg border appearance-none focus:outline-none focus:ring-0 focus:border-primary peer" />
               <label for="email" class="absolute text-sm duration-300 transform -translate-y-4 scale-75 top-3 z-10 origin-[0] bg-white px-2
                 peer-focus:px-2 peer-focus:text-primary
@@ -72,6 +72,24 @@
                 peer-focus:scale-75 peer-focus:-translate-y-4 left-8">
                 Adresse email
               </label>
+              <div v-if="errors.email" class="text-red-500 text-xs mt-1 ml-2">{{ errors.email }}</div>
+            </div>
+
+            <div class="relative">
+              <IconPhone
+                class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 peer-focus:text-primary transition-colors" />
+              <input v-model="form.phone" @blur="validatePhone" type="tel" id="phone" placeholder=" " required
+                class="text-gray-700 block px-10 pb-2 pt-3 w-full text-sm bg-white rounded-lg border appearance-none focus:outline-none focus:ring-0 focus:border-primary peer" />
+              <label for="phone" class="absolute text-sm duration-300 transform -translate-y-4 scale-75 top-3 z-10 origin-[0] bg-white px-2
+                peer-focus:px-2 peer-focus:text-primary
+                peer-placeholder-shown:scale-100
+                peer-placeholder-shown:-translate-y-1/2
+                peer-placeholder-shown:top-1/2
+                peer-focus:top-3
+                peer-focus:scale-75 peer-focus:-translate-y-4 left-8">
+                Numéro de téléphone
+              </label>
+              <div v-if="errors.phone" class="text-red-500 text-xs mt-1 ml-2">{{ errors.phone }}</div>
             </div>
 
             <div>
@@ -105,7 +123,7 @@
             <!-- Bouton -->
             <button type="submit"
                class="w-full bg-primary text-white py-2 px-4 sm:py-3 sm:px-6 rounded-md hover:bg-secondary hover:text-black transition-colors disabled:bg-gray-400 disabled:hover:bg-gray-400 disabled:cursor-not-allowed"
-              :disabled="isSubmitting">
+              :disabled="isSubmitting || hasErrors">
               <div class="flex items-center justify-center gap-2">
                 <template v-if="!isSubmitting">
                   Envoyer
@@ -182,8 +200,14 @@ import { IconMapPin, IconMail, IconPhone, IconUser, IconSend, IconLoader, IconCo
 const form = ref({
   name: '',
   email: '',
+  phone: '',
   subject: '',
   message: ''
+})
+
+const errors = ref({
+  email: '',
+  phone: ''
 })
 
 const isSubmitting = ref(false)
@@ -193,7 +217,52 @@ const submitStatus = ref({
   ticketNumber: '' as any
 })
 
+const hasErrors = computed(() => {
+  return errors.value.email !== '' || errors.value.phone !== ''
+})
+
 let timeoutId: NodeJS.Timeout | null = null
+
+const validateEmail = () => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!form.value.email) {
+    errors.value.email = 'L\'email est requis'
+  } else if (!emailRegex.test(form.value.email)) {
+    errors.value.email = 'Veuillez entrer une adresse email valide'
+  } else {
+    errors.value.email = ''
+  }
+}
+
+const validatePhone = () => {
+  const phoneRegex = /^(\+)?[\d\s\-\(\).]{8,15}$/
+  if (!form.value.phone) {
+    errors.value.phone = 'Le numéro de téléphone est requis'
+  } else if (!phoneRegex.test(form.value.phone)) {
+    errors.value.phone = 'Veuillez entrer un numéro de téléphone valide'
+  } else {
+    errors.value.phone = ''
+  }
+}  
+
+const validateForm = () => {
+  validateEmail()
+  validatePhone()
+  return !hasErrors.value
+}
+
+const validateAndSubmit = async () => {
+  if (!validateForm()) {
+    submitStatus.value = {
+      success: false,
+      message: 'Veuillez corriger les erreurs dans le formulaire',
+      ticketNumber: ''
+    }
+    return
+  }
+
+  await submitForm()
+}
 
 const submitForm = async () => {
   isSubmitting.value = true
@@ -221,6 +290,7 @@ const submitForm = async () => {
     form.value = {
       name: '',
       email: '',
+      phone: '',
       subject: '',
       message: ''
     }
@@ -250,7 +320,9 @@ const copyToClipboard = async (text: string) => {
     await navigator.clipboard.writeText(text)
     submitStatus.value.message = 'Numéro de ticket copié !'
     setTimeout(() => {
-      submitStatus.value.message = 'Message envoyé avec succès ! Nous vous répondrons bientôt.'
+      if (submitStatus.value.success) {
+        submitStatus.value.message = 'Message envoyé avec succès ! Nous vous répondrons bientôt.'
+      }
     }, 2000)
   } catch (err) {
     console.error('Erreur lors de la copie:', err)

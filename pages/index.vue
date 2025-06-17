@@ -4,6 +4,7 @@
     <ServicesSection />
     <ClientsSection />
     <PartnersSection />
+    <CallToAction />
   </div>
 </template>
 
